@@ -1,26 +1,17 @@
 name: DEVTO SIMPLE
 
-on:
+"on":
  push:
- branches: [main]
+ branches:
+ - main
  workflow_dispatch:
 
 jobs:
  publish:
  runs-on: ubuntu-latest
  steps:
+ - uses: actions/checkout@v4
  - name: Publish DEVTO
  env:
  DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
- run: |
- echo '{"article":{"title":"Shopify Scraping Workflows 2026","published":true,"tags":["scraping","shopify","data","automation"],"body_markdown":"Real Shopify scraping workflows. https://shopify.elatajoamazon.com/shopify-landing-premium.html","canonical_url":"https://shopify.elatajoamazon.com/entry/shopify-scraping-index.html"}}' > payload.json
-
- curl -X POST https://dev.to/api/articles \
- -H "api-key: $DEVTO_API_KEY" \
- -H "Content-Type: application/json" \
- --data @payload.json \
- -o response.json \
- -w "HTTP=%{http_code}\n"
-
- echo "==== RESPONSE ===="
- cat response.json
+ run: bash scripts/publish_devto.sh
