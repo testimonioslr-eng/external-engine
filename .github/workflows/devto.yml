@@ -4,10 +4,7 @@ on:
     branches: [main]
     paths:
       - 'content/devto/*.md'
-      - '.github/workflows/devto.yml'
   workflow_dispatch:
-  schedule:
-    - cron: '0 */6 * * *'
 
 jobs:
   publish:
@@ -18,7 +15,7 @@ jobs:
         env:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
         run: |
-          python3 << 'PYEOF'
+          python3 << 'PYEND'
 import os, json, pathlib, urllib.request
 file = pathlib.Path('content/devto/shopify.md')
 raw = file.read_text(encoding='utf-8')
@@ -42,12 +39,12 @@ for i, line in enumerate(lines):
         body.append(line)
 payload = {
     'article': {
-        'title': meta.get('title', 'Shopify Scraping Workflows 2026'),
+        'title': meta.get('title', 'Shopify Scraping 2026'),
         'published': True,
         'tags': [t.strip() for t in meta.get('tags', '').split(',') if t.strip()][:4],
         'canonical_url': meta.get('canonical_url', ''),
-        'body_markdown': '\n'.join(body).strip(),
-        'description': 'Auto-published from GitHub Actions'
+        'body_markdown': chr(10).join(body).strip(),
+        'description': 'Auto-published from GitHub'
     }
 }
 req = urllib.request.Request(
@@ -57,7 +54,6 @@ req = urllib.request.Request(
     method='POST'
 )
 with urllib.request.urlopen(req, timeout=60) as resp:
-    text = resp.read().decode('utf-8', errors='ignore')
     print('DEVTO_STATUS', resp.status)
-    print(text[:4000])
-PYEOF
+    print(resp.read().decode()[:2000])
+PYEND
