@@ -1,0 +1,16 @@
+name: DEVTO AUTO
+on:
+ push:
+ paths:
+ - 'content/devto/*.md'
+ - '.github/workflows/devto.yml'
+ workflow_dispatch:
+ schedule:
+ - cron: '0 */6 * * *'
+jobs:
+ publish:
+ runs-on: ubuntu-latest
+ steps:
+ - uses: actions/checkout@v4
+ - name: Workflow alive
+ run: echo 'DEVTO_WORKFLOW_OK'
