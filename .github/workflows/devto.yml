@@ -1,4 +1,4 @@
-name: DEVTO SIMPLE
+name: DEVTO MULTI POST
 
 on:
   push:
@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Publish DEVTO
+      - name: Publish DEVTO batch
         env:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
         run: bash scripts/publish_devto.sh
