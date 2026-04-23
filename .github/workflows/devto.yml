@@ -1,17 +1,17 @@
 name: DEVTO SIMPLE
 
-"on":
- push:
- branches:
- - main
- workflow_dispatch:
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
- publish:
- runs-on: ubuntu-latest
- steps:
- - uses: actions/checkout@v4
- - name: Publish DEVTO
- env:
- DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
- run: bash scripts/publish_devto.sh
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish DEVTO
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+        run: bash scripts/publish_devto.sh
