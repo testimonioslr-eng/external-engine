@@ -1,63 +1,63 @@
 name: Auto Publish DEVTO
 on:
- push:
- branches: [main]
- paths:
- - 'content/devto/*.md'
- - '.github/workflows/devto.yml'
- workflow_dispatch:
- schedule:
- - cron: '0 */6 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'content/devto/*.md'
+      - '.github/workflows/devto.yml'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 */6 * * *'
 
 jobs:
- publish:
- runs-on: ubuntu-latest
- steps:
- - uses: actions/checkout@v4
- - name: Publish to DEVTO
- env:
- DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
- run: |
- python3 - << 'PYEOF'
- import os, json, pathlib, urllib.request, sys
- file = pathlib.Path('content/devto/shopify.md')
- raw = file.read_text(encoding='utf-8')
- lines = raw.splitlines()
- meta = {}
- body = []
- in_front = False
- done = False
- for i, line in enumerate(lines):
- if i == 0 and line.strip() == '---':
- in_front = True
- continue
- if in_front and line.strip() == '---':
- in_front = False
- done = True
- continue
- if in_front and ':' in line:
- k, v = line.split(':', 1)
- meta[k.strip()] = v.strip()
- elif done:
- body.append(line)
- payload = {
- 'article': {
- 'title': meta.get('title', 'Shopify Scraping Workflows 2026'),
- 'published': True,
- 'tags': [t.strip() for t in meta.get('tags', '').split(',') if t.strip()][:4],
- 'canonical_url': meta.get('canonical_url', ''),
- 'body_markdown': '\n'.join(body).strip(),
- 'description': 'Auto-published from GitHub Actions'
- }
- }
- req = urllib.request.Request(
- 'https://dev.to/api/articles',
- data=json.dumps(payload).encode('utf-8'),
- headers={'Content-Type': 'application/json', 'api-key': os.environ['DEVTO_API_KEY']},
- method='POST'
- )
- with urllib.request.urlopen(req, timeout=60) as resp:
- text = resp.read().decode('utf-8', errors='ignore')
- print('DEVTO_STATUS', resp.status)
- print(text[:4000])
- PYEOF
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Publish to DEVTO
+        env:
+          DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+        run: |
+          python3 << 'PYEOF'
+import os, json, pathlib, urllib.request
+file = pathlib.Path('content/devto/shopify.md')
+raw = file.read_text(encoding='utf-8')
+lines = raw.splitlines()
+meta = {}
+body = []
+in_front = False
+done = False
+for i, line in enumerate(lines):
+    if i == 0 and line.strip() == '---':
+        in_front = True
+        continue
+    if in_front and line.strip() == '---':
+        in_front = False
+        done = True
+        continue
+    if in_front and ':' in line:
+        k, v = line.split(':', 1)
+        meta[k.strip()] = v.strip()
+    elif done:
+        body.append(line)
+payload = {
+    'article': {
+        'title': meta.get('title', 'Shopify Scraping Workflows 2026'),
+        'published': True,
+        'tags': [t.strip() for t in meta.get('tags', '').split(',') if t.strip()][:4],
+        'canonical_url': meta.get('canonical_url', ''),
+        'body_markdown': '\n'.join(body).strip(),
+        'description': 'Auto-published from GitHub Actions'
+    }
+}
+req = urllib.request.Request(
+    'https://dev.to/api/articles',
+    data=json.dumps(payload).encode('utf-8'),
+    headers={'Content-Type': 'application/json', 'api-key': os.environ['DEVTO_API_KEY']},
+    method='POST'
+)
+with urllib.request.urlopen(req, timeout=60) as resp:
+    text = resp.read().decode('utf-8', errors='ignore')
+    print('DEVTO_STATUS', resp.status)
+    print(text[:4000])
+PYEOF
