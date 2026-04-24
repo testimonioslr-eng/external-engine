@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -uo pipefail
 cd "$(dirname "$0")/.."
 for file in content/devto/*.md; do
  title=$(awk '/^title: /{sub(/^title: /,""); print; exit}' "$file")
@@ -19,5 +19,5 @@ for file in content/devto/*.md; do
  echo '=== RESPONSE ==='
  head -c 1200 response.json || true
  echo
- sleep 12
+ sleep 90
 done
